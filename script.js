@@ -38,25 +38,24 @@ function renderPage(page) {
     });
 
     lazyLoadVideos();
+    
 }
 
 function renderPagination() {
 
     const totalPages = Math.ceil(reels.length / perPage);
-
     const pagination = document.getElementById("pagination");
 
     let html = "";
 
-    for (let i = 1; i <= totalPages; i++) {
+    if(currentPage > 1){
+        html += `<button onclick="goPage(${currentPage-1})">Prev</button>`;
+    }
 
-        let active = (i === currentPage) ? "active" : "";
+    html += `<span> Page ${currentPage} / ${totalPages} </span>`;
 
-        html += `
-            <button class="${active}" onclick="goPage(${i})">
-                ${i}
-            </button>
-        `;
+    if(currentPage < totalPages){
+        html += `<button onclick="goPage(${currentPage+1})">Next</button>`;
     }
 
     pagination.innerHTML = html;
@@ -88,11 +87,12 @@ function lazyLoadVideos() {
                 el.innerHTML = `
                     <div class="fb-video"
                          data-href="${url}"
-                         data-width="320">
+                         data-width="320"
+                         data-show-text="false">
                     </div>
                 `;
 
-                if (typeof FB !== "undefined") {
+                if (window.FB) {
                     FB.XFBML.parse(el);
                 }
 
@@ -102,6 +102,8 @@ function lazyLoadVideos() {
 
         });
 
+    }, {
+        rootMargin: "200px"
     });
 
     videos.forEach(v => observer.observe(v));
